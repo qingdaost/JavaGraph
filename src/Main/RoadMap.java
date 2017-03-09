@@ -59,6 +59,7 @@ public class RoadMap {
 			List<Road> roadList = new ArrayList<Road>();
 			try {
 				 headers = data.readLine();
+				 System.out.println(headers);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
