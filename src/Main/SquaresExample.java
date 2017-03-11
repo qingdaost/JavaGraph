@@ -104,11 +104,7 @@ public class SquaresExample extends GUI {
 		}
 	}
 
-	public static void main(String[] args) {
-		new SquaresExample();
-		RoadMap rm = new RoadMap()  ;
-		rm.ReadFile();
-	}
+
 }
 
 // code for COMP261 assignments
