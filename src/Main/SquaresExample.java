@@ -104,7 +104,9 @@ public class SquaresExample extends GUI {
 		}
 	}
 
-
+	public static void main(String[] args) {
+		new SquaresExample();
+	}
 }
 
 // code for COMP261 assignments

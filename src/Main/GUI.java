@@ -198,7 +198,7 @@ public abstract class GUI {
 				File nodes = null, roads = null, segments = null, polygons = null;
 
 				// set up the file chooser
-				fileChooser.setCurrentDirectory(new File("."));
+				fileChooser.setCurrentDirectory(new File("C:/Users/Adrian/workspace/JavaGraph/data/small/"));
 				fileChooser.setDialogTitle("Select input directory");
 				fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 

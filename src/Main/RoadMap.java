@@ -1,6 +1,8 @@
 package Main;
 
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.Console;
@@ -14,19 +16,32 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+
+import Main.Location;
 
 import Main.GUI.Move;
 
 
+
 public class RoadMap extends GUI {
 	
-	
+		Graph roadMap  = new Graph()  ;
+		String dataDirectory = "C:/Users/Adrian/workspace/JavaGraph/data/small/";
 		public class Segment{ // (edge)
 			int segID;
 			Road road;
 			Node startNode;
 			Node endNode;
 			float	length ;   // ID
+			List<Location> coords = new ArrayList<Location>();
+			Random random = new Random();
+			public void draw(Graphics g,double x , double y) {
+				g.setColor(new Color(random.nextInt()));
+				g.drawOval((int)x, (int)y, 1, 1);
+				
+			}
+			
 			//coords
 		}
 	
@@ -41,6 +56,7 @@ public class RoadMap extends GUI {
 			Map<Integer,Node> nodes = new HashMap<Integer,Node>();
 			Collection<Segment> segments;
 			Map<Integer,Road> roads = new HashMap<Integer,Road>();
+		
 		} 
 		public class Road{  
 			List<Segment> segments = new ArrayList<Segment>();  
@@ -58,25 +74,28 @@ public class RoadMap extends GUI {
 		
 		
 		public RoadMap (){
-			Graph g = new Graph () ; 
-		
-			g.roads = ReadRoadFile();
-			g.nodes = ReadNodeFile ();
-			g.segments = ReadSegmentFile (g.roads,g.nodes);
-			 System.out.println(g.segments);
-			//g.
-			//node.outSegs =
-					//node.inSegs=
+			
+		    		
 		
 		}
+		
+		public void drawLocations(Graph g, Location origin,double scale) {
+			for (Segment s : g.segments)
+				for ( Location   c  : s.coords)  {
+					Point pt = c.asPoint(origin, scale);
+					 System.out.println(pt.x+","+pt.y+";"); //drawPoint(pt);
+				} 
+					
+		}
+		
 		@SuppressWarnings("null")
-		public Collection<Segment> ReadSegmentFile (Map<Integer, Road> roads, Map<Integer, Node> nodes){
-			String dataDirectory = "C:/Users/Adrian/workspace/JavaGraph/data/small/";
+		public Collection<Segment> ReadSegmentFile (File segementFile, Map<Integer, Road> roads, Map<Integer, Node> nodes){
+			
 			// Read file line by line
-			File roadFile = new File(dataDirectory +"roadSeg-roadID-length-nodeID-nodeID-coords.tab");
+		
 			BufferedReader data = null;
 			try {
-				data = new BufferedReader(new FileReader(roadFile));
+				data = new BufferedReader(new FileReader(segementFile));
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -104,6 +123,10 @@ public class RoadMap extends GUI {
 					segment.startNode =  nodes.get(Integer.parseInt(values[2]));
 					segment.endNode = nodes.get(Integer.parseInt(values[3]));
 					segment.segID=  segment.startNode.nodeID + segment.endNode.nodeID ;
+					for (int i=4 ; i< values.length-1 ; i+=2){
+						Location location = new Location(Float.parseFloat(values[i]) , Float.parseFloat(values[i+1]));
+						segment.coords.add(location);
+					}
 					
 					segments.add(segment);
 				}
@@ -117,13 +140,12 @@ public class RoadMap extends GUI {
 		
 		}
 		
-		public Map<Integer,Node> ReadNodeFile (){
-			String dataDirectory = "C:/Users/Adrian/workspace/JavaGraph/data/small/";
+		public Map<Integer,Node> ReadNodeFile (File nodeFile){
+		
 			// Read file line by line
-			File roadFile = new File(dataDirectory +"nodeID-lat-lon.tab");
 			BufferedReader data = null;
 			try {
-				data = new BufferedReader(new FileReader(roadFile));
+				data = new BufferedReader(new FileReader(nodeFile));
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -151,10 +173,9 @@ public class RoadMap extends GUI {
 		
 		}
 		
-		public Map<Integer,Road> ReadRoadFile (){
-			String dataDirectory = "C:/Users/Adrian/workspace/JavaGraph/data/small/";
+		public Map<Integer,Road> ReadRoadFile (File roadFile){
+	
 			// Read file line by line
-			File roadFile = new File(dataDirectory +"roadID-roadInfo.tab");
 			BufferedReader data = null;
 			try {
 				data = new BufferedReader(new FileReader(roadFile));
@@ -180,12 +201,18 @@ public class RoadMap extends GUI {
 					Road r = new Road();		
 					r.roadid = Integer.parseInt(values[0]);
 					r.type  = Integer.parseInt(values[1]);
-//					  Collection<Segment>  segments = ReadSegmentFile();
-//					  for (Segment s : segments) {
-//					      if( s.road.roadid ==r.roadid ){
-//					    	  r.segments.add(s) ;
-//					      }
-//					  }
+					for (int i=2 ; i <values.length-7 ; i++){
+						r.label += values[i]; 
+					}
+					
+					r.city = values[values.length-7];
+					r.oneway=Integer.parseInt(values[values.length-6]);	
+					r.speed =	Integer.parseInt(values[values.length-5]);
+					r.roadclass=Integer.parseInt(values[values.length-4]);
+					r.notforcar=Integer.parseInt(values[values.length-3]);
+					r.notforpede=Integer.parseInt(values[values.length-2]);	
+					r.notforbicy =  Integer.parseInt(values[values.length-1]);
+							
 					 
 					roads.put(r.roadid,r);
 				}
@@ -200,7 +227,11 @@ public class RoadMap extends GUI {
 		
 		@Override
 		protected void redraw(Graphics g) {
-	
+			
+//			for (Segment s : roadMap.segments)
+//				for ( Location   c  : s.coords)   //
+//						 s.draw(g , c.x, c.y);
+			
 		}
 
 		@Override
@@ -228,7 +259,43 @@ public class RoadMap extends GUI {
 
 		@Override
 		protected void onLoad(File nodes, File roads, File segments, File polygons) {
-			getTextOutputArea().setText("example doesn't load any files.");
+			//getTextOutputArea().setText("example doesn't load any files.");
+			Graph g = new Graph () ; 
+			g.roads = ReadRoadFile(roads);
+			
+			g.nodes = ReadNodeFile (nodes);
+			g.segments = ReadSegmentFile (segments,g.roads,g.nodes);
+			// populate segments inside road and node:
+			
+			for (Map.Entry<Integer, Road> entry : g.roads.entrySet())
+			{
+				for (Segment s : g.segments ) {
+					if(s.road.roadid == entry.getKey()){
+						 entry.getValue().segments.add(s);
+					}
+				}
+				
+			    //System.out.println(entry.getKey() + "/" + entry.getValue());
+			}
+			
+			for (Map.Entry<Integer, Node> entry : g.nodes.entrySet())
+			{
+				for (Segment s : g.segments ) {
+					if(s.startNode.nodeID == entry.getKey()){  
+						 entry.getValue().outSegs.add(s) ; 
+					}else if(s.endNode.nodeID == entry.getKey()){
+						entry.getValue().inSegs.add(s) ; 
+					}
+				}
+				
+			    //System.out.println(entry.getKey() + "/" + entry.getValue());
+			}
+			 System.out.println(g.segments);
+			
+			 
+			 Location location = new Location(-36.847622 ,174.763444);
+				drawLocations(g, location, 111) ;
+			 
 		}
 		
 		public static void main(String[] args) {
