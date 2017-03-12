@@ -280,8 +280,8 @@ public class RoadMap extends GUI {
 			
 			for (Map.Entry<Integer, Node> entry : g.nodes.entrySet())
 			{
-				for (Segment s : g.segments ) {
-					if(s.startNode.nodeID == entry.getKey()){  
+				for (Segment s : g.segments ) { 
+					if(s.startNode.nodeID == entry.getKey()){    // if node B is the startNode for edge 5, then edge 5 is the outgoing segment for node B
 						 entry.getValue().outSegs.add(s) ; 
 					}else if(s.endNode.nodeID == entry.getKey()){
 						entry.getValue().inSegs.add(s) ; 
