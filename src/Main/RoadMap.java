@@ -24,7 +24,7 @@ import Main.GUI.Move;
 
 
 
-public class RoadMap extends GUI {
+public class RoadMap extends GUI { // data
 	
 		Graph roadMap  = new Graph()  ;
 		String dataDirectory = "C:/Users/Adrian/workspace/JavaGraph/data/small/";
