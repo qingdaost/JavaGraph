@@ -21,13 +21,14 @@ import java.util.Random;
 import Main.Location;
 
 import Main.GUI.Move;
+import ecs100.UI;
 
 
 
 public class RoadMap extends GUI { // data
 	
 		Graph roadMap  = new Graph()  ;
-		String dataDirectory = "C:/Users/Adrian/workspace/JavaGraph/data/small/";
+		String dataDirectory = "C:/Users/Adrian/workspace/JavaGraph/data/large/";
 		public class Segment{ // (edge)
 			int segID;
 			Road road;
@@ -73,19 +74,39 @@ public class RoadMap extends GUI { // data
 		}
 		
 		
+		
 		public RoadMap (){
 			
-		    		
+		    	
 		
 		}
 		
 		public void drawLocations(Graph g, Location origin,double scale) {
-			for (Segment s : g.segments)
+			for (Segment s : g.segments){
+				
+				Point p1 =Location.newFromLatLon(s.startNode.lat, s.startNode.lon).asPoint(origin, scale);
+				Point p2 = Location.newFromLatLon(s.endNode.lat, s.endNode.lon).asPoint(origin, scale);
+				
+				UI.drawLine ( p1.x, p1.y,  p2.x, p2.y);
+				// System.out.println(p1.x+","+p1.y+";"); //drawPoint(pt);
+				List<Location> segmentPoints = new ArrayList<Location>();
 				for ( Location   c  : s.coords)  {
-					Point pt = c.asPoint(origin, scale);
-					 System.out.println(pt.x+","+pt.y+";"); //drawPoint(pt);
-				} 
 					
+					segmentPoints.add(c);
+					
+				} 
+				for (int i=0 ; i <segmentPoints.size()-1;i+=2){
+					
+
+					Point c1 =Location.newFromLatLon(segmentPoints.get(i).x , segmentPoints.get(i).y).asPoint(origin, scale);
+					Point c2 = Location.newFromLatLon(segmentPoints.get(i+1).x, segmentPoints.get(i+1).y).asPoint(origin, scale);
+					
+					UI.drawLine ( c1.x, c1.y,  c2.x, c2.y);
+				 
+				}
+		
+			}
+			
 		}
 		
 		@SuppressWarnings("null")
@@ -293,8 +314,9 @@ public class RoadMap extends GUI { // data
 			 System.out.println(g.segments);
 			
 			 
-			 Location location = new Location(-36.847622 ,174.763444);
-				drawLocations(g, location, 111) ;
+			 Location location = new Location(0 ,0);
+			    
+				drawLocations(g, location, 800) ;
 			 
 		}
 		
