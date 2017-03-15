@@ -28,7 +28,7 @@ import ecs100.UI;
 public class RoadMap extends GUI { // data
 		Graph g = new Graph () ; 
 		
-		String dataDirectory = "C:/Users/Administrator/Documents/GitHub/JavaGraph/data/small";
+		String dataDirectory = "C:/Users/Administrator/Documents/GitHub/JavaGraph/data/large";
 		public class Segment{ // (edge)
 			int segID;
 			Road road;
