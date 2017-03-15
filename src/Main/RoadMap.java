@@ -26,8 +26,8 @@ import ecs100.UI;
 
 
 public class RoadMap extends GUI { // data
-	
-		Graph roadMap  = new Graph()  ;
+		Graph g = new Graph () ; 
+		
 		String dataDirectory = "C:/Users/Adrian/workspace/JavaGraph/data/large/";
 		public class Segment{ // (edge)
 			int segID;
@@ -36,12 +36,7 @@ public class RoadMap extends GUI { // data
 			Node endNode;
 			float	length ;   // ID
 			List<Location> coords = new ArrayList<Location>();
-			Random random = new Random();
-			public void draw(Graphics g,double x , double y) {
-				g.setColor(new Color(random.nextInt()));
-				g.drawOval((int)x, (int)y, 1, 1);
-				
-			}
+	
 			
 			//coords
 		}
@@ -81,13 +76,18 @@ public class RoadMap extends GUI { // data
 		
 		}
 		
-		public void drawLocations(Graph g, Location origin,double scale) {
+	
+		
+		public void drawLocations(Graphics graphics , Location origin,double scale) {
+			
 			for (Segment s : g.segments){
 				
 				Point p1 =Location.newFromLatLon(s.startNode.lat, s.startNode.lon).asPoint(origin, scale);
 				Point p2 = Location.newFromLatLon(s.endNode.lat, s.endNode.lon).asPoint(origin, scale);
 				
-				UI.drawLine ( p1.x, p1.y,  p2.x, p2.y);
+				graphics.drawLine( p1.x, p1.y,  p2.x, p2.y);
+				
+				 System.out.println(p1.x+","+p1.y+";"+p2.x+","+p2.y); //drawPoint(pt);
 				// System.out.println(p1.x+","+p1.y+";"); //drawPoint(pt);
 				List<Location> segmentPoints = new ArrayList<Location>();
 				for ( Location   c  : s.coords)  {
@@ -100,9 +100,9 @@ public class RoadMap extends GUI { // data
 
 					Point c1 =Location.newFromLatLon(segmentPoints.get(i).x , segmentPoints.get(i).y).asPoint(origin, scale);
 					Point c2 = Location.newFromLatLon(segmentPoints.get(i+1).x, segmentPoints.get(i+1).y).asPoint(origin, scale);
-					
-					UI.drawLine ( c1.x, c1.y,  c2.x, c2.y);
-				 
+					graphics.drawLine( c1.x, c1.y,  c2.x, c2.y);
+					//UI.drawLine ( c1.x, c1.y,  c2.x, c2.y);
+				   // System.out.println(c1.x+","+c1.y+";"+c2.x+","+c2.y); //drawPoint(pt);
 				}
 		
 			}
@@ -143,9 +143,9 @@ public class RoadMap extends GUI { // data
 					segment.length = Float.parseFloat(values[1]);
 					segment.startNode =  nodes.get(Integer.parseInt(values[2]));
 					segment.endNode = nodes.get(Integer.parseInt(values[3]));
-					segment.segID=  segment.startNode.nodeID + segment.endNode.nodeID ;
+					//segment.segID=  segment.startNode.nodeID + segment.endNode.nodeID ;
 					for (int i=4 ; i< values.length-1 ; i+=2){
-						Location location = new Location(Float.parseFloat(values[i]) , Float.parseFloat(values[i+1]));
+						Location location = Location.newFromLatLon(Float.parseFloat(values[i]) , Float.parseFloat(values[i+1]));
 						segment.coords.add(location);
 					}
 					
@@ -247,11 +247,9 @@ public class RoadMap extends GUI { // data
 		}
 		
 		@Override
-		protected void redraw(Graphics g) {
-			
-//			for (Segment s : roadMap.segments)
-//				for ( Location   c  : s.coords)   //
-//						 s.draw(g , c.x, c.y);
+		protected void redraw(Graphics graphics) {
+			drawLocations(graphics ,  Location.newFromLatLon(-36.847622, 174.763444), 111) ;  // scale
+				
 			
 		}
 
@@ -275,16 +273,16 @@ public class RoadMap extends GUI { // data
 
 		@Override
 		protected void onMove(Move m) {
-			//makeSquares();
+			//drawLocations(graphics ,  Location.newFromLatLon(-36.847622, 174.763444), 111) ;  // scale
 		}
 
 		@Override
 		protected void onLoad(File nodes, File roads, File segments, File polygons) {
 			//getTextOutputArea().setText("example doesn't load any files.");
-			Graph g = new Graph () ; 
-			g.roads = ReadRoadFile(roads);
 			
-			g.nodes = ReadNodeFile (nodes);
+			g.roads = ReadRoadFile(roads);   // segment collection inside each roads is not populated
+			
+			g.nodes = ReadNodeFile (nodes); // segment collection inside each roads is not populated
 			g.segments = ReadSegmentFile (segments,g.roads,g.nodes);
 			// populate segments inside road and node:
 			
@@ -302,8 +300,8 @@ public class RoadMap extends GUI { // data
 			for (Map.Entry<Integer, Node> entry : g.nodes.entrySet())
 			{
 				for (Segment s : g.segments ) { 
-					if(s.startNode.nodeID == entry.getKey()){    // if node B is the startNode for edge 5, then edge 5 is the outgoing segment for node B
-						 entry.getValue().outSegs.add(s) ; 
+					if(s.startNode.nodeID == entry.getKey()){    // if node B is the startNode for edge 5, 
+						 entry.getValue().outSegs.add(s) ; // then edge 5 is the outgoing segment for node B`
 					}else if(s.endNode.nodeID == entry.getKey()){
 						entry.getValue().inSegs.add(s) ; 
 					}
@@ -314,9 +312,9 @@ public class RoadMap extends GUI { // data
 			 System.out.println(g.segments);
 			
 			 
-			 Location location = new Location(0 ,0);
-			    
-				drawLocations(g, location, 800) ;
+			 //Location location = new Location();   // origin 
+			
+				
 			 
 		}
 		
