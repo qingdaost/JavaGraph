@@ -281,7 +281,7 @@ public class RoadMap extends GUI { // data
 			//getTextOutputArea().setText("example doesn't load any files.");
 			
 			g.roads = ReadRoadFile(roads);   // segment collection inside each roads is not populated
-			
+			g.
 			g.nodes = ReadNodeFile (nodes); // segment collection inside each roads is not populated
 			g.segments = ReadSegmentFile (segments,g.roads,g.nodes);
 			// populate segments inside road and node:
